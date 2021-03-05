@@ -11,7 +11,7 @@
   ],
   "scripts": {
     "test": "lerna run test --since",
-    "new-version": "lerna version  --yes",
+    "new-version": "lerna version --conventional-commits --yes",
     "diff": "lerna diff"
   },
   "devDependencies": {
