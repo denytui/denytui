@@ -1,12 +1,20 @@
 {
-  "name": "root",
+  "name": "chatting-app",
   "private": true,
-  "devDependencies": {
-    "lerna": "^4.0.0"
-  },
   "version": "1.0.0",
   "main": "index.js",
   "repository": "https://github.com/itunedy/itunedy-chat.git",
   "author": "tienduy-nguyen <tienduy.nguyen.dev@gmail.com>",
-  "license": "MIT"
+  "license": "MIT",
+  "workspaces": [
+    "packages/*"
+  ],
+  "scripts": {
+    "test": "lerna run test --since",
+    "new-version": "lerna version  --yes",
+    "diff": "lerna diff"
+  },
+  "devDependencies": {
+    "lerna": "^4.0.0"
+  }
 }
