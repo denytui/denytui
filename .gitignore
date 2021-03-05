@@ -1,7 +1,12 @@
-# See http://help.github.com/ignore-files/ for more about ignoring files.
 
 # compiled output
-/dist
+dist/*
+build/
+out/
+!/dist/v4
+!/dist/v5
+!/dist/v6
+
 /tmp
 /out-tsc
 
@@ -13,11 +18,37 @@
 .project
 .classpath
 .c9/
+.vscode
 *.launch
 .settings/
 *.sublime-workspace
+scripts/flow/*/.flowconfig
+.flowconfig
+*~
+*.pyc
+.grunt
+_SpecRunner.html
+__benchmarks__
+remote-repo/
+coverage/
+.module-cache
+fixtures/dom/public/react-dom.js
+fixtures/dom/public/react.js
+test/the-files-to-test.generated.js
+*.log*
+chrome-user-data
+*.sublime-project
+*.sublime-workspace
+.idea
+*.iml
+.vscode
+*.swp
+*.swo
+
 
 # IDE - VSCode
+*.code-workspace
+/.vscode
 .vscode/*
 !.vscode/settings.json
 !.vscode/tasks.json
@@ -30,10 +61,28 @@
 /coverage
 /libpeerconnection.log
 npm-debug.log
-yarn-error.log
 testem.log
 /typings
+
+# e2e
+/e2e/*.js
+/e2e/*.map
 
 # System Files
 .DS_Store
 Thumbs.db
+
+# Mock API
+/api/node_modules
+
+# compiled templates
+src/app/homepage/pages/**/*.html
+
+# variables enviroment
+!*.example
+.env
+.env.local
+*.local
+.env.development
+.env.production
+.env.test
