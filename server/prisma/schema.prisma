@@ -13,7 +13,6 @@ generator client {
 enum RoleType {
   ADMIN
   USER
-  TEACHER
 }
 
 model User {

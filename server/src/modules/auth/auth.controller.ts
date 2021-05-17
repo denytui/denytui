@@ -51,7 +51,6 @@ export class AuthController {
 
   public async refreshToken(req: Request, res: Response) {
     const refreshToken = req.cookies.jid;
-    console.log(refreshToken);
     if (!refreshToken) {
       return res.send({ ok: false, accessToken: '' });
     }
