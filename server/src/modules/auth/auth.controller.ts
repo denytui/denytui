@@ -1,14 +1,14 @@
 import { User } from '.prisma/client';
 import { mapUserPayload } from '@modules/user/utils';
 import { mapUserOutput } from '@modules/user/utils/map-user-output';
-import { Injectable } from '@nestjs/common';
+import { Controller, Post, Req } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import express, { Request, Response } from 'express';
 import { PayloadUserForJwtToken, UserFromRequest } from 'src/commons/types';
 import { LoginUserDto, RegisterUserDto } from './dto';
 import { AuthService } from './services/auth.service';
 
-@Injectable()
+@Controller('auth')
 export class AuthController {
   public router = express.Router();
 
@@ -17,7 +17,19 @@ export class AuthController {
     private jwtService: JwtService,
   ) {}
 
-  public async login(req: Request, res: Response) {
+  public async me(@Req() req: Request) {
+    const bearerToken = req.headers['authorization'];
+    if (!bearerToken) return null;
+    const token = bearerToken.split(' ')[1];
+    if (!token) return null;
+
+    const { user } = this.jwtService.verify(token);
+
+    return { user };
+  }
+
+  @Post('login')
+  public async login(@Req() req: Request) {
     const input = req.body as LoginUserDto;
     const user: User = await this.authService.loginUser(input);
 
@@ -28,12 +40,13 @@ export class AuthController {
     const accessToken = this.jwtService.sign(payload);
     const refreshToken = this.jwtService.sign(payload);
     this.authService.resetCurrentHashedToken(user.id, refreshToken);
-    this.sendRefreshToken(res, refreshToken);
-    res.setHeader('authorization', `Bearer ${accessToken}`);
-    res.send({ user: mapUserOutput(user), authToken: { accessToken } });
+    this.sendRefreshToken(req?.res, refreshToken);
+    req?.res?.setHeader('authorization', `Bearer ${accessToken}`);
+
+    return { user: mapUserOutput(user), authToken: { accessToken } };
   }
 
-  public async register(req: Request, res: Response) {
+  public async register(@Req() req: Request) {
     const input = req.body as RegisterUserDto;
     const user: User = await this.authService.registerUser(input);
     const payload: PayloadUserForJwtToken = {
@@ -44,29 +57,29 @@ export class AuthController {
     const refreshToken = this.jwtService.sign(payload);
     this.authService.resetCurrentHashedToken(user.id, refreshToken);
 
-    this.sendRefreshToken(res, refreshToken);
-    res.setHeader('authorization', `Bearer ${accessToken}`);
-    res.send({ user: mapUserOutput(user), authToken: { accessToken } });
+    this.sendRefreshToken(req?.res, refreshToken);
+    req?.res.setHeader('authorization', `Bearer ${accessToken}`);
+
+    return { user: mapUserOutput(user), authToken: { accessToken } };
   }
 
-  public async refreshToken(req: Request, res: Response) {
+  public async refreshToken(@Req() req: Request) {
     const refreshToken = req.cookies.jid;
     if (!refreshToken) {
-      return res.send({ ok: false, accessToken: '' });
+      return { ok: false, accessToken: '' };
     }
     let user: UserFromRequest = null;
     try {
       user = await this.authService.getUserFromRefreshToken(refreshToken);
     } catch (err) {
-      console.log(err);
-      return res.send({ ok: false, accessToken: '' });
+      return { ok: false, accessToken: '' };
     }
-    if (!user) return res.send({ ok: false, accessToken: '' });
+    if (!user) return { ok: false, accessToken: '' };
 
     const accessToken = this.jwtService.sign({ user });
-    res.setHeader('authorization', `Bearer ${accessToken}`);
+    req?.res.setHeader('authorization', `Bearer ${accessToken}`);
 
-    return res.send({ ok: true, accessToken });
+    return { ok: true, accessToken };
   }
 
   //------------------------- private------------------------------------

@@ -11,10 +11,11 @@ export class UserService {
     const limit = paginationDto.limit || 25;
     const page = paginationDto.page || 1;
 
+    const count = await this.prismaService.user.count();
     const users = await this.prismaService.user.findMany({
       skip: (page - 1) * limit,
       take: limit,
     });
-    return users;
+    return { count, users };
   }
 }
