@@ -1,0 +1,10 @@
+{
+  "dependencies": {
+    "@nestjs/swagger": "^4.8.0",
+    "compression": "^1.7.4",
+    "cookie-parser": "^1.4.5",
+    "express-rate-limit": "^5.2.6",
+    "express-session": "^1.17.1",
+    "helmet": "^4.6.0"
+  }
+}
