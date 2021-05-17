@@ -1,0 +1,64 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+enum RoleType {
+  ADMIN
+  USER
+  TEACHER
+}
+
+model User {
+  id                        String   @id @default(cuid())
+  username                  String   @unique
+  email                     String   @unique
+  password                  String
+  role                      RoleType @default(USER)
+  avatar                    String   @default("https://i.imgur.com/TdTtqJ2.png")
+  active                    Boolean  @default(false)
+  currentHashedRefreshToken String?
+
+
+  rooms    Room[]
+  messages Message[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  @@map("users")
+}
+
+model Room {
+  id          String  @id @default(cuid())
+  name        String  @unique
+  description String?
+  isUser      Boolean @default(false)
+  isPrivate   Boolean @default(false)
+
+  users    User[]
+  messages Message[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Message {
+  id   String @id @default(cuid())
+  text String
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id])
+
+  roomId String?
+  Room   Room?   @relation(fields: [roomId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
