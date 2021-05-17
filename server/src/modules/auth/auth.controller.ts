@@ -1,18 +1,21 @@
 import { User } from '.prisma/client';
-import { PayloadUserForJwtToken, UserFromRequest } from '@common/types';
+import { mapUserPayload } from '@modules/user/utils';
 import { mapUserOutput } from '@modules/user/utils/map-user-output';
-import { mapUserPayload } from '@modules/user/utils/map-user-payload';
+import { Injectable } from '@nestjs/common';
+import { JwtService } from '@nestjs/jwt';
 import express, { Request, Response } from 'express';
-import { injectable } from 'tsyringe';
+import { PayloadUserForJwtToken, UserFromRequest } from 'src/commons/types';
 import { LoginUserDto, RegisterUserDto } from './dto';
 import { AuthService } from './services/auth.service';
-import { JwtService } from './services/jwt.service';
 
-@injectable()
+@Injectable()
 export class AuthController {
   public router = express.Router();
 
-  constructor(private authService: AuthService, private jwtService: JwtService) {}
+  constructor(
+    private authService: AuthService,
+    private jwtService: JwtService,
+  ) {}
 
   public async login(req: Request, res: Response) {
     const input = req.body as LoginUserDto;
@@ -23,7 +26,7 @@ export class AuthController {
     };
 
     const accessToken = this.jwtService.sign(payload);
-    const refreshToken = this.jwtService.sign(payload, true);
+    const refreshToken = this.jwtService.sign(payload);
     this.authService.resetCurrentHashedToken(user.id, refreshToken);
     this.sendRefreshToken(res, refreshToken);
     res.setHeader('authorization', `Bearer ${accessToken}`);
@@ -38,7 +41,7 @@ export class AuthController {
     };
 
     const accessToken = this.jwtService.sign({ user });
-    const refreshToken = this.jwtService.sign(payload, true);
+    const refreshToken = this.jwtService.sign(payload);
     this.authService.resetCurrentHashedToken(user.id, refreshToken);
 
     this.sendRefreshToken(res, refreshToken);
