@@ -15,6 +15,16 @@ enum RoleType {
   USER
 }
 
+enum MessageType {
+  FRIEND
+  GROUP
+}
+
+enum ContentType {
+  TEXT
+  FILE
+}
+
 model User {
   id                        String   @id @default(cuid())
   username                  String   @unique
@@ -22,42 +32,86 @@ model User {
   password                  String
   role                      RoleType @default(USER)
   avatar                    String   @default("https://i.imgur.com/TdTtqJ2.png")
+  intro                     String   @default("Hello world!")
+  sex                       String?  @default("male")
+  address                   String?
   active                    Boolean  @default(false)
   currentHashedRefreshToken String?
 
-
-  rooms    Room[]
-  messages Message[]
-
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  files  File[]
+  groups Group[]
+
+  senderFriendMessages   FriendMessage[] @relation("senderFriendMessages")
+  senderGroupMessages    GroupMessage[]  @relation("senderGroupMessages")
+  receiverFriendMessages FriendMessage[] @relation("receiverFriendMessages")
+  userFriends            User[]          @relation("userFriends")
+
+  userFriend   User?   @relation("userFriends", fields: [userFriendId], references: [id])
+  userFriendId String?
   @@map("users")
 }
 
-model Room {
-  id          String  @id @default(cuid())
-  name        String  @unique
-  description String?
-  isUser      Boolean @default(false)
-  isPrivate   Boolean @default(false)
+model File {
+  id String @id @default(cuid())
 
-  users    User[]
-  messages Message[]
+  user   User   @relation(fields: [userId], references: [id])
+  userId String
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  fileName String
 }
 
-model Message {
-  id   String @id @default(cuid())
-  text String
+model Group {
+  id             String         @id @default(cuid())
+  avatar         String         @default("https://i.imgur.com/Vih6Km5.png")
+  groupName      String
+  groupManager   User           @relation(fields: [groupManagerId], references: [id])
+  groupManagerId String
+  intro          String?        @default("The group owner is very lazy and didn't write an announcement")
+  groupMessages  GroupMessage[]
 
-  userId String
-  user   User   @relation(fields: [userId], references: [id])
-
-  roomId String
-  Room   Room   @relation(fields: [roomId], references: [id])
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  @@map("groups")
+}
+
+model GroupMessage {
+  id String @id @default(cuid())
+
+  senderGroupId String
+  senderGroup   User   @relation("senderGroupMessages", fields: [senderGroupId], references: [id])
+
+  group   Group?  @relation(fields: [groupId], references: [id])
+  groupId String?
+
+  content     String
+  type        ContentType @default(TEXT)
+  messageType MessageType @default(GROUP)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+}
+
+model FriendMessage {
+  id String @id @default(cuid())
+
+  sender   User   @relation("senderFriendMessages", fields: [senderId], references: [id])
+  senderId String
+
+  receiver   User   @relation("receiverFriendMessages", fields: [receiverId], references: [id])
+  receiverId String
+
+  content     String
+  type        ContentType @default(TEXT)
+  messageType MessageType @default(FRIEND)
+
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
 }
