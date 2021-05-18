@@ -41,11 +41,11 @@ model User {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  files  File[]
-  groups Group[]
+  files         File[]
+  groups        Group[]
+  groupMessages GroupMessage[]
 
   senderFriendMessages   FriendMessage[] @relation("senderFriendMessages")
-  senderGroupMessages    GroupMessage[]  @relation("senderGroupMessages")
   receiverFriendMessages FriendMessage[] @relation("receiverFriendMessages")
   userFriends            User[]          @relation("userFriends")
 
@@ -82,8 +82,8 @@ model Group {
 model GroupMessage {
   id String @id @default(cuid())
 
-  senderGroupId String
-  senderGroup   User   @relation("senderGroupMessages", fields: [senderGroupId], references: [id])
+  user   User?   @relation(fields: [userId], references: [id])
+  userId String?
 
   group   Group?  @relation(fields: [groupId], references: [id])
   groupId String?
@@ -94,6 +94,7 @@ model GroupMessage {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
 
 }
 
