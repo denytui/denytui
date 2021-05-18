@@ -45,6 +45,7 @@ export class UserService {
       },
     });
     const receivers = user.receiverFriendMessages.map((x) => x.receiver);
-    return receivers;
+    const count = receivers.length;
+    return { count, users: receivers };
   }
 }

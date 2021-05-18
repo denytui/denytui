@@ -10,14 +10,24 @@ export class UserController {
   constructor(private userService: UserService) {}
 
   @Get()
-  public async users(@Query('limit') limit?: number, @Query('p') p?: number) {
-    const safeLimit = parseInt(limit.toString()) || 25;
-    const safePage = parseInt(p.toString()) || 1;
-    const pagination: PaginationDto = {
-      limit: safeLimit,
-      page: safePage,
-    };
+  public async users(
+    @Query('name') name?: string,
+    @Query('limit') limit?: number,
+    @Query('p') p?: number,
+  ) {
+    // Query normally all users with pagination
+    if (!name) {
+      const safeLimit = parseInt(limit.toString()) || 25;
+      const safePage = parseInt(p.toString()) || 1;
+      const pagination: PaginationDto = {
+        limit: safeLimit,
+        page: safePage,
+      };
 
-    return await this.userService.getUsers(pagination);
+      return await this.userService.getUsers(pagination);
+    }
+
+    // Query by username or email
+    return await this.userService.getUsersByName(name);
   }
 }
