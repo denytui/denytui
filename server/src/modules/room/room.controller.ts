@@ -55,17 +55,6 @@ export class RoomController {
     }
   }
 
-  public async addMessage(
-    @Param('roomId') roomId: string,
-    @Body('message') message: string,
-    @Req() req: Request,
-  ) {
-    const user = req.user as UserFromRequest;
-    if (!user) throw new UnauthorizedException();
-
-    return await this.roomService.addMessage(roomId, user?.id, message);
-  }
-
   public async messagesByRoom(
     @Param('roomId') roomId: string,
     @Query('limit') limit?: number,

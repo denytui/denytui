@@ -61,15 +61,18 @@ export class RoomService {
     });
   }
 
-  public async messagesOfRoom(roomId: string, paginationDto: PaginationDto) {
+  public async getMessagesOfRoom(
+    roomId: string,
+    paginationDto?: PaginationDto,
+  ) {
     const room = await this.prismaService.room.findUnique({
       where: { id: roomId },
       select: { messages: true },
     });
     const messages = room.messages;
     const len = messages.length;
-    const limit = paginationDto.limit || 25;
-    const page = paginationDto.page || 1;
+    const limit = paginationDto?.limit || 25;
+    const page = paginationDto?.page || 1;
 
     if (len <= limit) return { count: len, messages };
 

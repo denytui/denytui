@@ -1,10 +1,15 @@
 {
   "dependencies": {
+    "@nestjs/platform-socket.io": "^7.6.15",
     "@nestjs/swagger": "^4.8.0",
+    "@nestjs/websockets": "^7.6.15",
     "compression": "^1.7.4",
     "cookie-parser": "^1.4.5",
     "express-rate-limit": "^5.2.6",
     "express-session": "^1.17.1",
     "helmet": "^4.6.0"
+  },
+  "devDependencies": {
+    "@types/socket.io": "^3.0.2"
   }
 }
