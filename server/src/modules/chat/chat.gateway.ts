@@ -9,8 +9,6 @@ import {
   WsException,
 } from '@nestjs/websockets';
 import { User } from '@prisma/client';
-import { from, Observable } from 'rxjs';
-import { UserFromRequest } from 'src/commons/types';
 
 @WebSocketGateway(1080, { namespace: 'rooms' })
 export class ChatGateWay implements OnGatewayConnection, OnGatewayDisconnect {
