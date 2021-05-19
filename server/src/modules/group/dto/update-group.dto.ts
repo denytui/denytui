@@ -1,18 +1,15 @@
 import { IsBoolean, IsOptional, IsString } from 'class-validator';
 
-export class CreateRoomDto {
+export class UpdateGroupDto {
+  @IsOptional()
   @IsString()
-  name!: string;
+  groupName?: string;
 
   @IsString()
   @IsOptional()
-  description?: string;
+  intro?: string;
 
   @IsBoolean()
   @IsOptional()
-  isUser?: boolean;
-
-  @IsBoolean()
-  @IsOptional()
-  isPrivate?: boolean;
+  avatar?: string;
 }

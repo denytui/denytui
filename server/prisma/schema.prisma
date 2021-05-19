@@ -42,12 +42,14 @@ model User {
   updatedAt DateTime @updatedAt
 
   files         File[]
-  groups        Group[]
+  managedgroups Group[]        @relation("groupManager")
+  joinedGroups  Group[]        @relation("groupMembers")
   groupMessages GroupMessage[]
 
   senderFriendMessages   FriendMessage[] @relation("senderFriendMessages")
   receiverFriendMessages FriendMessage[] @relation("receiverFriendMessages")
   userFriends            User[]          @relation("userFriends")
+
 
   userFriend   User?   @relation("userFriends", fields: [userFriendId], references: [id])
   userFriendId String?
@@ -61,17 +63,19 @@ model File {
   userId String
 
   fileName String
+
+  @@map("files")
 }
 
 model Group {
   id             String         @id @default(cuid())
   avatar         String         @default("https://i.imgur.com/Vih6Km5.png")
   groupName      String
-  groupManager   User           @relation(fields: [groupManagerId], references: [id])
+  groupManager   User           @relation("groupManager", fields: [groupManagerId], references: [id])
   groupManagerId String
   intro          String?        @default("The group owner is very lazy and didn't write an announcement")
   groupMessages  GroupMessage[]
-
+  members        User[]         @relation("groupMembers")
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -96,6 +100,7 @@ model GroupMessage {
   updatedAt DateTime @updatedAt
 
 
+  @@map("group_messages")
 }
 
 model FriendMessage {
@@ -115,4 +120,6 @@ model FriendMessage {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
+
+  @@map("friend_messages")
 }

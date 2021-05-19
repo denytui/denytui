@@ -1,4 +1,4 @@
-import { RoomService } from '@modules/room/room.service';
+import { GroupService } from '@modules/group/group.service';
 import { JwtService } from '@nestjs/jwt';
 import {
   OnGatewayConnection,
@@ -10,7 +10,7 @@ import {
 } from '@nestjs/websockets';
 import { User } from '@prisma/client';
 
-@WebSocketGateway(1080, { namespace: 'rooms' })
+@WebSocketGateway(1080, { namespace: 'groups' })
 export class ChatGateWay implements OnGatewayConnection, OnGatewayDisconnect {
   @WebSocketServer()
   public server: any;
@@ -19,7 +19,7 @@ export class ChatGateWay implements OnGatewayConnection, OnGatewayDisconnect {
 
   constructor(
     private jwtService: JwtService,
-    private roomService: RoomService,
+    private groupService: GroupService,
   ) {}
 
   public async handleConnection(socket) {
@@ -45,29 +45,29 @@ export class ChatGateWay implements OnGatewayConnection, OnGatewayDisconnect {
   public async onMessage(client, data: any) {
     const event = 'message';
     const result = data[0];
-    await this.roomService.addMessage(
-      result.room.id,
+    await this.groupService.addMessage(
+      result.group.id,
       result.user.id,
       result.message,
     );
 
-    client.broadcast.to(result.room).emit(event, result.message);
+    client.broadcast.to(result.group).emit(event, result.message);
 
     return { event, data: result.message };
   }
 
   @SubscribeMessage('join')
-  public async onRoomJoin(client, data: any) {
-    const roomId = data[0];
-    client.join(roomId);
-    const messages = await this.roomService.getMessagesOfRoom(roomId);
+  public async onGroupJoin(client, data: any) {
+    const groupId = data[0];
+    client.join(groupId);
+    const messages = await this.groupService.getMessagesOfGroup(groupId);
 
     // Send last messages to the connected user
     client.emit('message', messages);
   }
 
   @SubscribeMessage('leave')
-  public async onRoomLeave(client, data: any) {
+  public async onGroupLeave(client, data: any) {
     client.leave(data[0]);
   }
 }

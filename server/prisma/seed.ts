@@ -8,7 +8,7 @@ const prisma = new PrismaClient();
 async function main(): Promise<void> {
   // Delete all olds data
   await prisma.user.deleteMany();
-  await prisma.room.deleteMany();
+  await prisma.group.deleteMany();
   await prisma.message.deleteMany();
 
   const password = await bcrypt.hash('1234567', 12);
@@ -48,8 +48,8 @@ async function main(): Promise<void> {
   console.log('50 users created');
 
   // -----------------------------------------------
-  // Create rooms & categories
-  const roomData = [];
+  // Create groups & categories
+  const groupData = [];
   const languages = [
     'Javascript',
     'TypeScript',
@@ -63,7 +63,7 @@ async function main(): Promise<void> {
   ];
 
   for (let i = 0; i < languages.length; ++i) {
-    roomData.push({ name: 'Room ' + languages[i] });
+    groupData.push({ name: 'Group ' + languages[i] });
   }
 
   const frameworks = [
@@ -84,10 +84,10 @@ async function main(): Promise<void> {
     'Nuxtjs',
   ];
   for (let i = 0; i < frameworks.length; ++i) {
-    roomData.push({ name: 'Room ' + languages[i] });
+    groupData.push({ name: 'Group ' + languages[i] });
   }
 
-  await prisma.room.createMany({ data: roomData, skipDuplicates: true });
+  await prisma.group.createMany({ data: groupData, skipDuplicates: true });
 }
 main()
   .catch((e) => {

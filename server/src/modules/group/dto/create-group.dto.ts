@@ -1,19 +1,18 @@
+import { User } from '.prisma/client';
 import { IsBoolean, IsOptional, IsString } from 'class-validator';
 
-export class UpdateRoomDto {
+export class CreateGroupDto {
   @IsString()
-  @IsOptional()
-  name?: string;
+  groupName!: string;
 
   @IsString()
   @IsOptional()
-  description?: string;
+  intro?: string;
 
   @IsBoolean()
   @IsOptional()
-  isUser?: boolean;
+  avatar?: string;
 
-  @IsBoolean()
   @IsOptional()
-  isPrivate?: boolean;
+  groupManager: User;
 }

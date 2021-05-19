@@ -2,8 +2,8 @@
   Warnings:
 
   - You are about to drop the `Message` table. If the table is not empty, all the data it contains will be lost.
-  - You are about to drop the `Room` table. If the table is not empty, all the data it contains will be lost.
-  - You are about to drop the `_RoomToUser` table. If the table is not empty, all the data it contains will be lost.
+  - You are about to drop the `Group` table. If the table is not empty, all the data it contains will be lost.
+  - You are about to drop the `_GroupToUser` table. If the table is not empty, all the data it contains will be lost.
 
 */
 -- CreateEnum
@@ -13,16 +13,16 @@ CREATE TYPE "MessageType" AS ENUM ('FRIEND', 'GROUP');
 CREATE TYPE "ContentType" AS ENUM ('TEXT', 'FILE');
 
 -- DropForeignKey
-ALTER TABLE "Message" DROP CONSTRAINT "Message_roomId_fkey";
+ALTER TABLE "Message" DROP CONSTRAINT "Message_groupId_fkey";
 
 -- DropForeignKey
 ALTER TABLE "Message" DROP CONSTRAINT "Message_userId_fkey";
 
 -- DropForeignKey
-ALTER TABLE "_RoomToUser" DROP CONSTRAINT "_RoomToUser_A_fkey";
+ALTER TABLE "_GroupToUser" DROP CONSTRAINT "_GroupToUser_A_fkey";
 
 -- DropForeignKey
-ALTER TABLE "_RoomToUser" DROP CONSTRAINT "_RoomToUser_B_fkey";
+ALTER TABLE "_GroupToUser" DROP CONSTRAINT "_GroupToUser_B_fkey";
 
 -- AlterTable
 ALTER TABLE "users" ADD COLUMN     "intro" TEXT NOT NULL DEFAULT E'Hello world!',
@@ -34,10 +34,10 @@ ADD COLUMN     "userFriendId" TEXT;
 DROP TABLE "Message";
 
 -- DropTable
-DROP TABLE "Room";
+DROP TABLE "Group";
 
 -- DropTable
-DROP TABLE "_RoomToUser";
+DROP TABLE "_GroupToUser";
 
 -- CreateTable
 CREATE TABLE "File" (

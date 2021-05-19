@@ -1,9 +1,9 @@
 import { Module } from '@nestjs/common';
 import { PrismaService } from 'src/providers/prisma/prisma.service';
-import { RoomService } from './room.service';
+import { GroupService } from './group.service';
 
 @Module({
   imports: [],
-  providers: [PrismaService, RoomService],
+  providers: [PrismaService, GroupService],
 })
-export class RoomModule {}
+export class GroupModule {}

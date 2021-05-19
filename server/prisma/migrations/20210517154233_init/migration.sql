@@ -18,7 +18,7 @@ CREATE TABLE "users" (
 );
 
 -- CreateTable
-CREATE TABLE "Room" (
+CREATE TABLE "Group" (
     "id" TEXT NOT NULL,
     "name" TEXT NOT NULL,
     "description" TEXT,
@@ -35,7 +35,7 @@ CREATE TABLE "Message" (
     "id" TEXT NOT NULL,
     "text" TEXT NOT NULL,
     "userId" TEXT NOT NULL,
-    "roomId" TEXT,
+    "groupId" TEXT,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
@@ -43,7 +43,7 @@ CREATE TABLE "Message" (
 );
 
 -- CreateTable
-CREATE TABLE "_RoomToUser" (
+CREATE TABLE "_GroupToUser" (
     "A" TEXT NOT NULL,
     "B" TEXT NOT NULL
 );
@@ -55,22 +55,22 @@ CREATE UNIQUE INDEX "users.username_unique" ON "users"("username");
 CREATE UNIQUE INDEX "users.email_unique" ON "users"("email");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "Room.name_unique" ON "Room"("name");
+CREATE UNIQUE INDEX "Group.name_unique" ON "Group"("name");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "_RoomToUser_AB_unique" ON "_RoomToUser"("A", "B");
+CREATE UNIQUE INDEX "_GroupToUser_AB_unique" ON "_GroupToUser"("A", "B");
 
 -- CreateIndex
-CREATE INDEX "_RoomToUser_B_index" ON "_RoomToUser"("B");
+CREATE INDEX "_GroupToUser_B_index" ON "_GroupToUser"("B");
 
 -- AddForeignKey
 ALTER TABLE "Message" ADD FOREIGN KEY ("userId") REFERENCES "users"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Message" ADD FOREIGN KEY ("roomId") REFERENCES "Room"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE "Message" ADD FOREIGN KEY ("groupId") REFERENCES "Group"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "_RoomToUser" ADD FOREIGN KEY ("A") REFERENCES "Room"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "_GroupToUser" ADD FOREIGN KEY ("A") REFERENCES "Group"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "_RoomToUser" ADD FOREIGN KEY ("B") REFERENCES "users"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "_GroupToUser" ADD FOREIGN KEY ("B") REFERENCES "users"("id") ON DELETE CASCADE ON UPDATE CASCADE;
