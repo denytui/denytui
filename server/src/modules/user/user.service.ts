@@ -61,31 +61,40 @@ export class UserService {
     //--------------------------------------------
     // Query normally, no query name
     if (!queryName) {
-      const friends = await this.prismaService.user.findMany({
+      const friends = await this.prismaService.userFriend.findMany({
+        where: { userId },
         skip: (page - 1) * limit,
         take: limit,
       });
-      const count = await this.prismaService.user.count();
+      const count = await this.prismaService.userFriend.count({
+        where: { userId },
+      });
       return { count, friends };
     }
 
     // With query name
-    const friends = await this.prismaService.user.findMany({
+    const friends = await this.prismaService.userFriend.findMany({
       where: {
         OR: [
-          { username: { contains: queryName, mode: 'insensitive' } },
-          { email: { contains: queryName, mode: 'insensitive' } },
+          {
+            friend: { username: { contains: queryName, mode: 'insensitive' } },
+          },
+          { friend: { email: { contains: queryName, mode: 'insensitive' } } },
         ],
+        userId,
       },
       skip: (page - 1) * limit,
       take: limit,
     });
-    const count = await this.prismaService.user.count({
+    const count = await this.prismaService.userFriend.count({
       where: {
         OR: [
-          { username: { contains: queryName, mode: 'insensitive' } },
-          { email: { contains: queryName, mode: 'insensitive' } },
+          {
+            friend: { username: { contains: queryName, mode: 'insensitive' } },
+          },
+          { friend: { email: { contains: queryName, mode: 'insensitive' } } },
         ],
+        userId,
       },
     });
 
@@ -94,15 +103,14 @@ export class UserService {
 
   public async addFriend(userId: string, friendId: string) {
     if (this.checkAlreadyFriend) {
-      const newFriend = await this.prismaService.userFriend.create({
+      await this.prismaService.userFriend.create({
         data: {
           user: { connect: { id: userId } },
           friend: { connect: { id: friendId } },
         },
       });
-      return newFriend;
     }
-    return { alreadyFriend: true };
+    return { added: true };
   }
   public async removeFriend(userId: string, friendId: string) {
     try {
