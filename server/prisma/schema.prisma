@@ -48,12 +48,22 @@ model User {
 
   senderFriendMessages   FriendMessage[] @relation("senderFriendMessages")
   receiverFriendMessages FriendMessage[] @relation("receiverFriendMessages")
-  userFriends            User[]          @relation("userFriends")
 
-
-  userFriend   User?   @relation("userFriends", fields: [userFriendId], references: [id])
-  userFriendId String?
+  friends       UserFriend[] @relation("userFriends")
+  userOfFriends UserFriend[]
   @@map("users")
+}
+
+model UserFriend {
+  id String @id @default(cuid())
+
+  user   User?   @relation(fields: [userId], references: [id])
+  userId String?
+
+  friend   User?   @relation("userFriends", fields: [friendId], references: [id])
+  friendId String?
+
+  @@map("user_friends")
 }
 
 model File {

@@ -1,6 +1,7 @@
 /*
   Warnings:
 
+  - You are about to drop the column `userFriendId` on the `users` table. All the data in the column will be lost.
   - You are about to drop the `File` table. If the table is not empty, all the data it contains will be lost.
   - You are about to drop the `FriendMessage` table. If the table is not empty, all the data it contains will be lost.
   - You are about to drop the `GroupMessage` table. If the table is not empty, all the data it contains will be lost.
@@ -19,7 +20,13 @@ ALTER TABLE "FriendMessage" DROP CONSTRAINT "FriendMessage_senderId_fkey";
 ALTER TABLE "GroupMessage" DROP CONSTRAINT "GroupMessage_groupId_fkey";
 
 -- DropForeignKey
-ALTER TABLE "GroupMessage" DROP CONSTRAINT "GroupMessage_userId_fkey";
+ALTER TABLE "GroupMessage" DROP CONSTRAINT "GroupMessage_senderGroupId_fkey";
+
+-- DropForeignKey
+ALTER TABLE "users" DROP CONSTRAINT "users_userFriendId_fkey";
+
+-- AlterTable
+ALTER TABLE "users" DROP COLUMN "userFriendId";
 
 -- DropTable
 DROP TABLE "File";
@@ -29,6 +36,15 @@ DROP TABLE "FriendMessage";
 
 -- DropTable
 DROP TABLE "GroupMessage";
+
+-- CreateTable
+CREATE TABLE "user_friends" (
+    "id" TEXT NOT NULL,
+    "userId" TEXT,
+    "friendId" TEXT,
+
+    PRIMARY KEY ("id")
+);
 
 -- CreateTable
 CREATE TABLE "files" (
@@ -78,6 +94,12 @@ CREATE UNIQUE INDEX "_groupMembers_AB_unique" ON "_groupMembers"("A", "B");
 
 -- CreateIndex
 CREATE INDEX "_groupMembers_B_index" ON "_groupMembers"("B");
+
+-- AddForeignKey
+ALTER TABLE "user_friends" ADD FOREIGN KEY ("userId") REFERENCES "users"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "user_friends" ADD FOREIGN KEY ("friendId") REFERENCES "users"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "files" ADD FOREIGN KEY ("userId") REFERENCES "users"("id") ON DELETE CASCADE ON UPDATE CASCADE;

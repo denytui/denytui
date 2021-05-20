@@ -48,4 +48,78 @@ export class UserService {
     const count = receivers.length;
     return { count, users: receivers };
   }
+
+  //  Friends relations
+  public async getFriends(
+    userId: string,
+    queryName?: string,
+    pagination?: PaginationDto,
+  ) {
+    const limit = pagination?.limit || 25;
+    const page = pagination?.page || 1;
+
+    //--------------------------------------------
+    // Query normally, no query name
+    if (!queryName) {
+      const friends = await this.prismaService.user.findMany({
+        skip: (page - 1) * limit,
+        take: limit,
+      });
+      const count = await this.prismaService.user.count();
+      return { count, friends };
+    }
+
+    // With query name
+    const friends = await this.prismaService.user.findMany({
+      where: {
+        OR: [
+          { username: { contains: queryName, mode: 'insensitive' } },
+          { email: { contains: queryName, mode: 'insensitive' } },
+        ],
+      },
+      skip: (page - 1) * limit,
+      take: limit,
+    });
+    const count = await this.prismaService.user.count({
+      where: {
+        OR: [
+          { username: { contains: queryName, mode: 'insensitive' } },
+          { email: { contains: queryName, mode: 'insensitive' } },
+        ],
+      },
+    });
+
+    return { count, friends };
+  }
+
+  public async addFriend(userId: string, friendId: string) {
+    if (this.checkAlreadyFriend) {
+      const newFriend = await this.prismaService.userFriend.create({
+        data: {
+          user: { connect: { id: userId } },
+          friend: { connect: { id: friendId } },
+        },
+      });
+      return newFriend;
+    }
+    return { alreadyFriend: true };
+  }
+  public async removeFriend(userId: string, friendId: string) {
+    try {
+      await this.prismaService.userFriend.deleteMany({
+        where: { AND: [{ userId }, { friendId }] },
+      });
+      return { deleted: true };
+    } catch (error) {
+      return { deleted: false };
+    }
+  }
+
+  //--
+  private async checkAlreadyFriend(userId: string, friendId: string) {
+    const userFriends = await this.prismaService.userFriend.findMany({
+      where: { AND: [{ userId }, { friendId }] },
+    });
+    return userFriends?.length > 0;
+  }
 }
