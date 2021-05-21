@@ -71,6 +71,18 @@ export class GroupService {
     await this.prismaService.group.delete({ where: { id: groupId } });
   }
 
+  public async isUserBelongToGroup(userId: string, groupId: string) {
+    const group = await this.prismaService.group.findUnique({
+      where: { id: groupId },
+      select: { members: true, groupManager: true },
+    });
+    if (!group) return false;
+    const isManager = group.groupManager.id == userId;
+    const isMember = group.members.some((user) => user.id == userId);
+
+    return isManager || isMember;
+  }
+
   public async userJoinGroup(groupId: string, userId: string) {
     const updatedGroup = await this.prismaService.group.update({
       where: { id: groupId },
